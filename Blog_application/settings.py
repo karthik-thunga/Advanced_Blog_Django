@@ -127,6 +127,6 @@ EMAIL_USE_TLS = True
 
 # Adding mail user name and password via Enviroment variable
 
-EMAIL_HOST_USER = 'kkthunga1@gmail.com' #os.environ.get('mail_user_name')
-EMAIL_HOST_PASSWORD = 'KAR98457KAR' #os.environ.get('mail_password')
+EMAIL_HOST_USER = os.environ.get('mail_user_name')
+EMAIL_HOST_PASSWORD = os.environ.get('mail_password')
 
