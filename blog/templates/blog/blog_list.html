@@ -1,0 +1,11 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+    {% if posts %}
+        {% for post in posts %}
+            <h2><a href="{{ post.get_absolute_url }}"> {{ post.title }} </a></h2>
+        {% endfor %}
+    {% else %}
+        <h2>No Published posts are available</h2>
+    {% endif %}
+{% endblock %}
