@@ -1,6 +1,6 @@
 {% extends 'blog/base.html' %}
 
-{% block title %} Share a post{% endblock %}
+{% block title %} {{ post.title }}{% endblock %}
 
 {% block content %}
     {% if post %}
@@ -8,5 +8,37 @@
        <p>Published by {{ post.author }} on {{ post.publish }}</p>
        <p>{{ post.body }}</p>
        <button><a href="{% url 'blog:post_share' post.id %}">Share this post</a></button>
+
+        {% if comments %}
+            {% with comments.count as total_comments %}
+                <h2> 
+                    {{ total_comments }} comment{{ total_comments|pluralize }}
+                </h2>
+            {% endwith %}
+            {% for comment in comments %}
+                <h3>{{ comment.name }} <span><h5>{{ comment.created }}</h5></span></h3>
+                <p>{{ comment.body }}</p>
+            {% endfor %}
+        {% else %}
+            <p>No comments yet</p>
+        {% endif %}
+
+        <div>
+            {% if new_comment %}
+                <p>Your comment is added </p>
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ comment_form.as_p }}
+                    <button type="submit">Comment</button>
+                </form>
+            {% else %}
+                <h3>Add your comment here </h3>
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ comment_form.as_p }}
+                    <button type="submit">Comment</button>
+                </form>
+            {% endif %}
+        </div>
     {% endif %}
 {% endblock %}

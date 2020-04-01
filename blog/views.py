@@ -1,22 +1,63 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Post
+from .models import Post, Comment
 from django.views.generic import ListView
-from .forms import EmailPostForm
+from .forms import EmailPostForm, CommentForm
 from django.core.mail import send_mail
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from taggit.models import Tag
 
 # Blog home page for listing all published blogs
 
-class PostListView(ListView):
-    queryset = Post.published.all()
-    context_object_name = 'posts'
-    paginated_by = 3
-    template_name = 'blog/blog_list.html'   
+def post_list(request, tag_slug=None): 
+    object_list = Post.published.all() 
+    tag = None 
+ 
+    if tag_slug: 
+        tag = get_object_or_404(Tag, slug=tag_slug) 
+        object_list = object_list.filter(tags__in=[tag]) 
+ 
+    paginator = Paginator(object_list, 3) # 3 posts in each page 
+    page = request.GET.get('page') 
+    try: 
+        posts = paginator.page(page) 
+    except PageNotAnInteger: 
+        # If page is not an integer deliver the first page 
+        posts = paginator.page(1) 
+    except EmptyPage: 
+        # If page is out of range deliver last page of results 
+        posts = paginator.page(paginator.num_pages) 
+    return render(request, 'blog/blog_list.html', {'page': page, 'posts': posts, 'tag': tag}) 
+
+# class PostListView(ListView):
+#     queryset = Post.published.all()
+#     context_object_name = 'posts'
+#     paginated_by = 3
+#     template_name = 'blog/blog_list.html'   
 
 # Detailed post for individual blog
 
 def post_detail(request, year, month, day, post):
     post = get_object_or_404(Post, status='published', publish__year=year, publish__month=month, publish__day=day, slug=post)
-    context = { 'post':post }
+
+    # Collecting the comments to current post
+
+    comments = post.comments.filter(is_active=True)
+
+    new_comment = None
+    if request.method == 'POST':
+        # New comment has been made
+        comment_form = CommentForm(request.POST)
+        if comment_form.is_valid():
+            # Save the comment but do not commit to database as still need to link post object
+            new_comment = comment_form.save(commit=False)
+            # Add current post to comment
+            new_comment.post = post
+            new_comment.save()
+    else:
+        comment_form = CommentForm()
+
+    comment_form = CommentForm()
+    context = { 'post':post,'comments':comments, 'comment_form':comment_form, 'new_comment':new_comment }
     return render(request, 'blog/post_detail.html', context)
 
 # Sharing the post throgh Email using Forms
