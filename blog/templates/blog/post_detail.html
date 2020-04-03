@@ -40,5 +40,15 @@
                 </form>
             {% endif %}
         </div>
+
+        <div>
+            {% if similar_posts %}
+                {% for post in similar_posts %}
+                    <h2><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h2>
+                {% endfor %}
+            {% else %}
+                <p>No Similar posts</p>
+            {% endif %}
+        </div>
     {% endif %}
 {% endblock %}

@@ -5,6 +5,7 @@ from .forms import EmailPostForm, CommentForm
 from django.core.mail import send_mail
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from taggit.models import Tag
+from django.db.models import Count
 
 # Blog home page for listing all published blogs
 
@@ -16,7 +17,7 @@ def post_list(request, tag_slug=None):
         tag = get_object_or_404(Tag, slug=tag_slug) 
         object_list = object_list.filter(tags__in=[tag]) 
  
-    paginator = Paginator(object_list, 3) # 3 posts in each page 
+    paginator = Paginator(object_list, 9) # 3 posts in each page 
     page = request.GET.get('page') 
     try: 
         posts = paginator.page(page) 
@@ -56,8 +57,14 @@ def post_detail(request, year, month, day, post):
     else:
         comment_form = CommentForm()
 
+    # Suggesting post with similar tags
+    post_tag_ids = post.tags.values_list('id', flat=True)
+    similar_posts = Post.published.filter(tags__in=post_tag_ids).exclude(id=post.id)
+    similar_posts = similar_posts.annotate(same_tags=Count('tags')).order_by('-same_tags','-publish')[:4]
+
+
     comment_form = CommentForm()
-    context = { 'post':post,'comments':comments, 'comment_form':comment_form, 'new_comment':new_comment }
+    context = { 'post':post,'comments':comments, 'comment_form':comment_form, 'new_comment':new_comment, 'similar_posts':similar_posts }
     return render(request, 'blog/post_detail.html', context)
 
 # Sharing the post throgh Email using Forms
