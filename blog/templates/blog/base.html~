@@ -1,4 +1,4 @@
-{% load blog_tags %}
+{% load 'blog_tags' %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,7 +11,7 @@
 <body>
     <div>
         <h3>Latest posts</h3>
-        {% show_latest_post %}
+        {% latest_post %}
     </div>
     {% block content %} {% endblock %}
 </body>
