@@ -12,6 +12,9 @@
     <div>
         <h3>Latest posts</h3>
         {% show_latest_post %}
+        <p>
+            <a href = '{% url "blog:post_feed"%}'> Subsribe to my RSS feed </a>
+        </p>
     </div>
     {% block content %} {% endblock %}
 </body>
