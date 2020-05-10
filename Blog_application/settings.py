@@ -39,8 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'taggit',
+    'django.contrib.sites',
+    'django.contrib.sitemaps',
 ]
-
+SITE_ID = 1
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -130,4 +132,5 @@ EMAIL_USE_TLS = True
 
 EMAIL_HOST_USER = os.environ.get('mail_user_name')
 EMAIL_HOST_PASSWORD = os.environ.get('mail_password')
+
 
