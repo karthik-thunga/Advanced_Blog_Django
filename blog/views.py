@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from .models import Post, Comment
 from django.views.generic import ListView
 from .forms import EmailPostForm, CommentForm, SearchForm
-from django.contrib.postgres.search import SearchVector
+from django.contrib.postgres.search import SearchVector, SearchRank, SearchQuery, TrigramSimilarity
 from django.core.mail import send_mail
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from taggit.models import Tag
@@ -103,8 +103,17 @@ def search(request):
         form = SearchForm(request.GET)
         if form.is_valid():
             query = form.cleaned_data['query']
+            similar = TrigramSimilarity('title', query,)
+            results = Post.objects.annotate(similarity=similar
+                ).filter(similarity__gt=0.3).order_by('-similarity')
 
-            results = Post.objects.annotate(search=SearchVector('title', 'body'), ).filter(search=query)
+            # For searching across multiple fields
+
+            # search_vector = SearchVector('title', weight='A') + SearchVector('body', weight='B')
+            # search_query = SearchQuery(query)
+            # results = Post.objects.annotate(search=search_vector, 
+            #     rank=SearchRank(search_vector, search_query) ).filter(rank__gte=0.3).order_by('-rank')
+
     
     return render(request, 'blog/search.html', {'form':form, 'query':query, 'results':results})
 
