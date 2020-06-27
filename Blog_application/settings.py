@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'blog.apps.BlogConfig',
+    'account.apps.AccountConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -135,5 +136,12 @@ EMAIL_USE_TLS = True
 
 EMAIL_HOST_USER = os.environ.get('mail_user_name')
 EMAIL_HOST_PASSWORD = os.environ.get('mail_password')
+
+# Login success url
+LOGIN_REDIRECT_URL = 'blog:blog_list'
+LOGIN_URL = 'login'
+LOGOUT_URL = 'logout'
+
+
 
 
