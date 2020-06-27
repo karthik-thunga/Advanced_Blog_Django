@@ -139,8 +139,8 @@ EMAIL_HOST_PASSWORD = os.environ.get('mail_password')
 
 # Login success url
 LOGIN_REDIRECT_URL = 'blog:blog_list'
-LOGIN_URL = 'login'
-LOGOUT_URL = 'logout'
+LOGIN_URL = 'account:login'
+LOGOUT_URL = 'account:logout'
 
 
 
