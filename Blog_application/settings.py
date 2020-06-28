@@ -142,6 +142,7 @@ LOGIN_REDIRECT_URL = 'blog:blog_list'
 LOGIN_URL = 'account:login'
 LOGOUT_URL = 'account:logout'
 
-
+# For testing while developement
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
